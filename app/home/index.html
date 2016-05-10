@@ -1,0 +1,30 @@
+﻿<div class="mdl-layout__tab-panel is-active" id="home">
+  <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-cell mdl-cell--8-col-desktop mdl-cell--2-offset-desktop
+   mdl-cell--10-col-tablet mdl-cell--12-col-phone">
+    <header class="mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--12-col-phone mdl-color--primary mdl-color-text--white">
+      <h4>General stats</h4>
+    </header>
+    <div class="mdl-card mdl-cell mdl-cell--12-col-desktop mdl-cell--12-col-tablet mdl-cell--12-col-phone">
+      <div class="mdl-card__supporting-text">
+        <canvas id="generalChart"></canvas>
+      </div>
+      <div class="mdl-card__actions mdl-color-text--primary-lighter">
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" ng-click="vm.fetchTodayStat()">Fetch Today Stat</a>
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" ng-click="vm.fetchMissingWeekStats()">Fetch Week missing stats</a>
+      </div>
+    </div>
+    <button id="demo-menu-lower-right"
+            class="mdl-button mdl-js-button mdl-button--icon">
+      <i class="material-icons mdl-color-text--white">more_vert</i>
+    </button>
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+        for="demo-menu-lower-right">
+      <li class="mdl-menu__item" ng-click="vm.dateRange(5)">5 days</li>
+      <li class="mdl-menu__item" ng-click="vm.dateRange(7)">7 days</li>
+      <li class="mdl-menu__item" ng-click="vm.dateRange(10)">10 days</li>
+      <li class="mdl-menu__item" ng-click="vm.dateRange(30)">30 days</li>
+      <li class="mdl-menu__item" ng-click="vm.dateRange('All')">All</li>
+    </ul>
+  </section>
+  <section></section>
+</div>

@@ -1,0 +1,112 @@
+﻿html, body {
+  font-family: 'Roboto', 'Helvetica', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.mdl-layout {
+  display: block;
+}
+.mdl-body .mdl-layout__content {
+  position: static;
+}
+.mdl-body .material-icons {
+  vertical-align: middle;
+}
+.apiInput {
+  display: inline-block;
+}
+.mdl-body .mdl-layout__header-row {
+  padding-left: 40px;
+}
+.mdl-body .mdl-layout__tab-bar-button {
+  display: none;
+}
+.mdl-body .mdl-layout.is-small-screen .mdl-layout__tab-bar .mdl-button {
+  display: none;
+}
+.mdl-body .mdl-layout:not(.is-small-screen) .mdl-layout__tab-bar,
+.mdl-body .mdl-layout:not(.is-small-screen) .mdl-layout__tab-bar-container {
+  overflow: visible;
+}
+.mdl-body .mdl-layout__tab-bar-container {
+  height: 64px;
+}
+.mdl-body .mdl-layout__tab-bar {
+  padding: 0;
+  padding-left: 16px;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+}
+.mdl-body .mdl-layout__tab-bar .mdl-layout__tab {
+  height: 64px;
+  line-height: 64px;
+}
+.mdl-body .mdl-layout__tab-bar .mdl-layout__tab.is-active::after {
+  background-color: #f5f5f5;
+  height: 4px;
+}
+.mdl-body main > .mdl-layout__tab-panel {
+  padding: 8px;
+  padding-top: 48px;
+}
+.mdl-body .mdl-card {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+.mdl-body .mdl-card > * {
+  height: auto;
+}
+.mdl-body .mdl-card .mdl-card__supporting-text {
+  margin: 30px;
+  flex-grow: 1;
+  padding: 0;
+  color: inherit;
+  width: calc(100% - 60px);
+  text-align: center;
+}
+.mdl-body .mdl-card__actions {
+  margin: 0;
+  padding: 4px 40px;
+  color: inherit;
+}
+.mdl-body .mdl-card__actions a {
+  margin: 0;
+}
+.mdl-body .mdl-card__actions a:hover,
+.mdl-body .mdl-card__actions a:active {
+  color: inherit;
+  background-color: transparent;
+}
+.mdl-body .mdl-card__supporting-text + .mdl-card__actions {
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+.mdl-body .mdl-layout__content section:not(:last-of-type) {
+  position: relative;
+  margin-bottom: 48px;
+}
+.mdl-body section.section--center {
+  margin-top: 40px;
+  /*max-width: 1024px;*/
+}
+.mdl-body section > header{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mdl-body section > button {
+  position: absolute;
+  z-index: 99;
+  top: 8px;
+  right: 8px;
+}
+.mdl-body section .section__text {
+  flex-grow: 1;
+  flex-shrink: 0;
+  padding-top: 8px;
+}
+.mdl-body .mdl-menu__container {
+  z-index: 99;
+}

@@ -1,0 +1,61 @@
+﻿<%- include('partials/header') %>
+<div id="toast-error" class="mdl-js-snackbar mdl-snackbar">
+    <div class="mdl-snackbar__text"></div>
+    <button class="mdl-snackbar__action" type="button"></button>
+</div>
+<main class="mdl-layout__content">
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-cell mdl-cell--4-col-desktop
+    mdl-cell--4-offset-desktop mdl-cell--4-col-tablet mdl-cell--2-offset-tablet mdl-cell--4-col-phone"
+             style="text-align: center; margin-top: 40px">
+        <div class="mdl-card mdl-cell mdl-cell--12-col">
+            <div class="mdl-card__supporting-text">
+                <form method="post" id="registerForm">
+                    <h4>Register</h4>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" name="firstName" id="firstName" value="<%= locals.firstName || '' %>" />
+                        <label class="mdl-textfield__label" for="firstName">First Name</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" name="lastName" id="lastName" value="<%= locals.lastName || '' %>" />
+                        <label class="mdl-textfield__label" for="lastName">Last name</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" name="username" id="username"  value="<%= locals.username || '' %>">
+                        <label class="mdl-textfield__label" for="username">Username</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="text" name="apiKey" id="apiKey" value="<%= locals.apiKey || '' %>">
+                        <label class="mdl-textfield__label" for="apiKey">ApiKey</label>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="password" name="password" id="password" ng-model="vm.user.password">
+                        <label class="mdl-textfield__label" for="password">Password</label>
+                    </div>
+                </form>
+            </div>
+            <div class="mdl-card__actions">
+                <button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="document.getElementById('registerForm').submit();">Register</button>
+                <a href="/login" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Cancel</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<% if(locals.error) { %>
+<script>
+    setTimeout(function(){
+        'use strict';
+        var snackbarContainer = document.querySelector('#toast-error');
+        var data = {message: '<%= error %>'};
+        snackbarContainer.MaterialSnackbar.showSnackbar(data);
+    }, 1000);
+
+    if('<%= error %>' == 'Some fields missing') {
+        document.getElementById('username').setAttribute('required',true);
+        document.getElementById('apiKey').setAttribute('required',true);
+        document.getElementById('password').setAttribute('required',true);
+    }
+</script>
+<% } %>
+
+<%- include('partials/footer') %>

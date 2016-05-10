@@ -1,0 +1,60 @@
+﻿<%- include('partials/header') %>
+<div id="toast-error" class="mdl-js-snackbar mdl-snackbar">
+    <div class="mdl-snackbar__text"></div>
+    <button class="mdl-snackbar__action" type="button"></button>
+</div>
+    <main class="mdl-layout__content">
+        <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-cell mdl-cell--4-col-desktop
+        mdl-cell--4-offset-desktop mdl-cell--4-col-tablet mdl-cell--2-offset-tablet mdl-cell--4-col-phone"
+                 style="text-align: center; margin-top: 40px">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+                <form method="post" id="loginForm">
+                    <div class="mdl-card__supporting-text">
+                        <h4>Login</h4>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" name="username" id="username" value="<%= locals.username || '' %>"/>
+                            <label class="mdl-textfield__label" for="username">Username</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="password" name="password" id="password">
+                            <label class="mdl-textfield__label" for="password">Password</label>
+                        </div>
+                    </div>
+                    <div class="mdl-card__actions">
+                        <button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="document.getElementById('loginForm').submit();" >Login</button>
+                        <a href="/register" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Register</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+</div>
+
+<% if(locals.error) { %>
+<script>
+    setTimeout(function(){
+        'use strict';
+        var snackbarContainer = document.querySelector('#toast-error');
+        var data = {message: '<%= error %>'};
+        snackbarContainer.MaterialSnackbar.showSnackbar(data);
+    }, 1000);
+
+    if('<%= error %>' == 'Some fields missing') {
+        document.getElementById('username').setAttribute('required',true);
+        document.getElementById('password').setAttribute('required',true);
+    }
+</script>
+<% } %>
+<% if(locals.success) { %>
+<script>
+    setTimeout(function(){
+        'use strict';
+        var snackbarContainer = document.querySelector('#toast-error');
+        var data = {message: '<%= success %>'};
+        snackbarContainer.MaterialSnackbar.showSnackbar(data);
+    }, 1000);
+</script>
+<% } %>
+
+
+<%- include('partials/footer') %>

@@ -1,0 +1,96 @@
+﻿<div class="mdl-layout__tab-panel is-active" id="#/account">
+  <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-cell mdl-cell--4-col-desktop mdl-cell--4-offset-desktop mdl-cell--8-col-tablet mdl-cell--10-col-phone">
+    <div class="mdl-card mdl-cell mdl-cell--12-col">
+      <form name="vm.updateForm" ng-submit="vm.saveUser()" novalidate>
+        <div class="mdl-card__supporting-text">
+          <h4>Account info</h4>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="firstName" value="vm.user.firstName" ng-model="vm.user.firstName" required>
+            <label class="mdl-textfield__label" for="firstName">First Name</label>
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="lastName" value="vm.user.lastName" ng-model="vm.user.lastName" required>
+            <label class="mdl-textfield__label" for="lastName">Last name</label>
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="username" value="vm.user.username" ng-model="vm.user.username" required>
+            <label class="mdl-textfield__label" for="username">Username</label>
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="apiKey" value="vm.user.apiKey" ng-model="vm.user.apiKey" disabled>
+            <label class="mdl-textfield__label" for="apiKey">ApiKey</label>
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="password" id="password" ng-model="vm.user.password">
+            <label class="mdl-textfield__label" for="password">Password</label>
+          </div>
+        </div>
+        <div class="mdl-card__actions">
+          <button type="submit" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Save </button>
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" id="showDeleteDialog">Delete</a>
+          <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" id="showUpdateApikeyDialog">Change apikey</a>
+        </div>
+      </form>
+    </div>
+  </section>
+
+
+  <dialog class="mdl-dialog" id="updateApiKey">
+    <form name="vm.changeApiKeyForm" ng-submit="vm.changeApiKey()" novalidate>
+      <h5 class="mdl-dialog__title">Change apiKey</h5>
+      <div class="mdl-dialog__content">
+        <p>
+          When confirming the change of ApiKey, all your saved statistics will be eliminated!
+        </p>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input class="mdl-textfield__input" type="text" id="newApiKey" ng-model="vm.user.newApiKey" required>
+          <label class="mdl-textfield__label" for="newApiKey">ApiKey</label>
+        </div>
+      </div>
+      <div class="mdl-dialog__actions">
+        <button type="submit" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Confirm</button>
+        <button type="button" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect close">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+  <script>
+    var dialogUpdateApikey = document.querySelector('#updateApiKey');
+    var showDialogUpdateApiKeyButton = document.querySelector('#showUpdateApikeyDialog');
+    if (!dialogUpdateApikey.showModal) {
+      dialogPolyfill.registerDialog(dialogUpdateApikey);
+    }
+    showDialogUpdateApiKeyButton.addEventListener('click', function() {
+      dialogUpdateApikey.showModal();
+    });
+    dialogUpdateApikey.querySelector('.close').addEventListener('click', function() {
+      dialogUpdateApikey.close();
+    });
+  </script>
+
+  <dialog class="mdl-dialog" id="deleteAccount">
+
+      <h5 class="mdl-dialog__title">Delete Account</h5>
+      <div class="mdl-dialog__content">
+        <p>
+          Are you sure you want to delete your account?
+        </p>
+      </div>
+      <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button" ng-click="vm.deleteUser()">Confirm</button>
+        <button type="button" class="mdl-button close">Cancel</button>
+      </div>
+  </dialog>
+  <script>
+    var dialogDelete = document.querySelector('#deleteAccount');
+    var showDialogButtonDelete = document.querySelector('#showDeleteDialog');
+    if (!dialogDelete.showModal) {
+      dialogPolyfill.registerDialog(dialogDelete);
+    }
+    showDialogButtonDelete.addEventListener('click', function() {
+      dialogDelete.showModal();
+    });
+    dialogDelete.querySelector('.close').addEventListener('click', function() {
+      dialogDelete.close();
+    });
+  </script>
+</div>

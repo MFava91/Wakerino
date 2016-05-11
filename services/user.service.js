@@ -74,29 +74,27 @@ function getById(_id) {
 function fetchSevenDay(apikey) {
   var deferred = Q.defer();
   var stats = [];
-  if(stats.length == 6) {
-    deferred.resolve(stats);
-  } else {
-    //loop to fetch stats in synchronous way
-    var loop = function(i) {
-      var day = Date.parse(i.toString()).toString('yyyy-MM-dd');
-      //fetch stat of 'i' day before
-      var waka = fetchWaka(day, apikey);
-      waka.then(function (stat) {
-        stats.push(stat);
-        if (++i < 0) {
-          loop(i);
-        } else {
-          var waka = fetchWaka(Date.today().toString('yyyy-MM-dd'), apikey);
-          waka.then(function (stat) {
-            stats.push(stat);
-            deferred.resolve(stats);
-          })
-        }
-      })
-    };
-    loop(-6);
-  }
+
+  //loop to fetch stats in synchronous way
+  var loop = function(i) {
+    var day = Date.parse(i.toString()).toString('yyyy-MM-dd');
+    //fetch stat of 'i' day before
+    var waka = fetchWaka(day, apikey);
+    waka.then(function (stat) {
+      stats.push(stat);
+      if (++i < 0) {
+        loop(i);
+      } else {
+        var waka = fetchWaka(Date.today().toString('yyyy-MM-dd'), apikey);
+        waka.then(function (stat) {
+          stats.push(stat);
+          deferred.resolve(stats);
+        })
+      }
+    })
+  };
+  loop(-6);
+
   return deferred.promise;
 }
 
@@ -337,7 +335,7 @@ function fetchMissingWeekStats(_id) {
           }
         } else {
           var first = -1;
-          for (var i = user.stats.length - 2; i >= 0 && first == -1; i--) {
+          for (var i = user.stats.length - 2; i >= 0 && first === -1; i--) {
             if (Date.parse(statsUpdated[0].day).compareTo(Date.parse(user.stats[i].day)) == 1) {
               if (Date.parse(statsUpdated[0].day).compareTo(Date.parse(user.stats[i + 1].day)) == 0) {
                 first = i + 1;
@@ -349,7 +347,7 @@ function fetchMissingWeekStats(_id) {
               conta++;
             }
           }
-          if (first == -1) {
+          if (first === -1) {
             user.stats.splice(0, 0, statsUpdated[0]);
             first = 1;
             conta++;
@@ -357,14 +355,11 @@ function fetchMissingWeekStats(_id) {
           while (conta < 7 && first < user.stats.length) {
             if (Date.parse(statsUpdated[conta].day).compareTo(Date.parse(user.stats[first].day)) == 0) {
               conta++;
-              first++;
             } else if (Date.parse(statsUpdated[conta].day).compareTo(Date.parse(user.stats[first].day)) == -1) {
               user.stats.splice(first, 0, statsUpdated[conta]);
-              first++;
               conta++;
-            } else {
-              first++;
             }
+            first++;
           }
         }
       }

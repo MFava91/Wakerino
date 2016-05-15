@@ -7,6 +7,7 @@ var mongo = require('mongoskin');
 var db = mongo.db(config.connectionString, { native_parser: true });
 db.bind('users');
 var WakaIstance = require('wakatime');
+var sortBy = require('sort-array')
 require('datejs');
 
 var CronJob = require('cron').CronJob;
@@ -314,6 +315,22 @@ function createStat(_id) {
   return deferred.promise;
 }
 
+//Remove duplicated days
+function arrayUnique(array) {
+  var a = array.concat();
+  for(var i=0; i<a.length; ++i) {
+    for(var j=i+1; j<a.length; ++j) {
+      if(Date.parse(a[i].day).compareTo(Date.parse(a[j].day)) == 0) {
+        if(a[i].total_seconds < a[j].total_seconds)
+          a[i] = a[j];
+        a.splice(j--, 1);
+      }
+    }
+  }
+
+  return a;
+}
+
 //Retrieve the last week's stats and save those missing
 function fetchMissingWeekStats(_id) {
   var deferred = Q.defer();
@@ -329,38 +346,16 @@ function fetchMissingWeekStats(_id) {
           user.stats.push(statsUpdated[i]);
         }
       } else {
+        //if the last recorded date is prior to the oldest recoverable data, push at the end
         if (Date.parse(statsUpdated[0].day).compareTo(Date.parse(user.stats[user.stats.length - 1].day)) == 1) {
           for (var i = 0; i < 7; i++) {
             user.stats.push(statsUpdated[i]);
           }
         } else {
-          var first = -1;
-          for (var i = user.stats.length - 2; i >= 0 && first === -1; i--) {
-            if (Date.parse(statsUpdated[0].day).compareTo(Date.parse(user.stats[i].day)) == 1) {
-              if (Date.parse(statsUpdated[0].day).compareTo(Date.parse(user.stats[i + 1].day)) == 0) {
-                first = i + 1;
-              } else {
-                first = i;
-              }
-              user.stats.splice(i, 0, statsUpdated[0]);
-              first++;
-              conta++;
-            }
-          }
-          if (first === -1) {
-            user.stats.splice(0, 0, statsUpdated[0]);
-            first = 1;
-            conta++;
-          }
-          while (conta < 7 && first < user.stats.length) {
-            if (Date.parse(statsUpdated[conta].day).compareTo(Date.parse(user.stats[first].day)) == 0) {
-              conta++;
-            } else if (Date.parse(statsUpdated[conta].day).compareTo(Date.parse(user.stats[first].day)) == -1) {
-              user.stats.splice(first, 0, statsUpdated[conta]);
-              conta++;
-            }
-            first++;
-          }
+          //Concatenates all stats with fetched stats and removes duplicated items. After that, sorts the array by date
+          var tempStats = arrayUnique(user.stats.concat(statsUpdated));
+          sortBy(tempStats, 'day');
+          user.stats = tempStats;
         }
       }
       db.users.update(

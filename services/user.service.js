@@ -37,39 +37,39 @@ module.exports = service;
 
 //authentication
 function authenticate(username, password) {
-    var deferred = Q.defer();
+  var deferred = Q.defer();
 
-    db.users.findOne({ username: username }, function (err, user) {
-        if (err) deferred.reject(err);
+  db.users.findOne({ username: username }, function (err, user) {
+    if (err) deferred.reject(err);
 
-        if (user && bcrypt.compareSync(password, user.hash)) {
-            // authentication successful
-            deferred.resolve(jwt.sign({ sub: user._id }, config.secret));
-        } else {
-            // authentication failed
-            deferred.resolve();
-        }
-    });
+    if (user && bcrypt.compareSync(password, user.hash)) {
+        // authentication successful
+        deferred.resolve(jwt.sign({ sub: user._id }, config.secret));
+    } else {
+        // authentication failed
+        deferred.resolve();
+    }
+  });
 
-    return deferred.promise;
+  return deferred.promise;
 }
 
 function getById(_id) {
-    var deferred = Q.defer();
+  var deferred = Q.defer();
 
-    db.users.findById(_id, function (err, user) {
-        if (err) deferred.reject(err);
+  db.users.findById(_id, function (err, user) {
+    if (err) deferred.reject(err);
 
-        if (user) {
-            // return user (without hashed password)
-            deferred.resolve(_.omit(user, 'hash'));
-        } else {
-            // user not found
-            deferred.resolve();
-        }
-    });
+    if (user) {
+        // return user (without hashed password)
+        deferred.resolve(_.omit(user, 'hash'));
+    } else {
+        // user not found
+        deferred.resolve();
+    }
+  });
 
-    return deferred.promise;
+  return deferred.promise;
 }
 
 function fetchSevenDay(apikey) {
@@ -117,103 +117,103 @@ function checkApiKey(apiKey) {
 }
 
 function create(userParam) {
-    var deferred = Q.defer();
+  var deferred = Q.defer();
 
-    // validation
-    db.users.findOne(
-        { username: userParam.username },
-        function (err, user) {
-            if (err) deferred.reject(err);
+  // validation
+  db.users.findOne(
+    { username: userParam.username },
+    function (err, user) {
+      if (err) deferred.reject(err);
 
-            if (user) {
-                // username already exists
-                deferred.reject('Username "' + userParam.username + '" is already taken');
-            } else {
-                var check = checkApiKey(userParam.apiKey);
-                check.then(function(resp){
-                  if(resp == 'Unauthorized') {
-                    //apiKey is not valid
-                    deferred.reject('ApiKey error!');
-                  } else {
-                    createUser();
-                  }
-                })
-            }
+      if (user) {
+        // username already exists
+        deferred.reject('Username "' + userParam.username + '" is already taken');
+      } else {
+        var check = checkApiKey(userParam.apiKey);
+        check.then(function(resp){
+          if(resp == 'Unauthorized') {
+            //apiKey is not valid
+            deferred.reject('ApiKey error!');
+          } else {
+            createUser();
+          }
+        })
+      }
+    });
+
+  function createUser() {
+    // set user object to userParam without the cleartext password
+    var user = _.omit(userParam, 'password');
+    // add hashed password to user object
+    user.hash = bcrypt.hashSync(userParam.password, 10);
+    //fetch last week's stats of the user
+    var fetchData = fetchSevenDay(user.apiKey);
+    fetchData.then(function (stats) {
+      user.stats = stats;
+
+      db.users.insert(
+        user,
+        function (err, doc) {
+          if (err) deferred.reject(err);
+
+          deferred.resolve();
         });
-
-    function createUser() {
-        // set user object to userParam without the cleartext password
-        var user = _.omit(userParam, 'password');
-        // add hashed password to user object
-        user.hash = bcrypt.hashSync(userParam.password, 10);
-        //fetch last week's stats of the user
-        var fetchData = fetchSevenDay(user.apiKey);
-        fetchData.then(function (stats) {
-          user.stats = stats;
-
-          db.users.insert(
-            user,
-            function (err, doc) {
-              if (err) deferred.reject(err);
-
-              deferred.resolve();
-            });
-        });
-    }
-    return deferred.promise;
+    });
+  }
+  return deferred.promise;
 }
 
 function update(_id, userParam) {
-    var deferred = Q.defer();
+  var deferred = Q.defer();
 
-    // validation
-    db.users.findById(_id, function (err, user) {
-        if (err) deferred.reject(err);
+  // validation
+  db.users.findById(_id, function (err, user) {
+    if (err) deferred.reject(err);
 
-        if (user.username !== userParam.username) {
-            // username has changed so check if the new username is already taken
-            db.users.findOne(
-                { username: userParam.username },
-                function (err, user) {
-                    if (err) deferred.reject(err);
+    if (user.username !== userParam.username) {
+      // username has changed so check if the new username is already taken
+      db.users.findOne(
+        { username: userParam.username },
+        function (err, user) {
+          if (err) deferred.reject(err);
 
-                    if (user) {
-                        // username already exists
-                        deferred.reject('Username "' + req.body.username + '" is already taken')
-                    } else {
-                        updateUser();
-                    }
-                });
-        } else {
+          if (user) {
+            // username already exists
+            deferred.reject('Username "' + req.body.username + '" is already taken')
+          } else {
             updateUser();
-        }
-    });
+          }
+        });
+    } else {
+      updateUser();
+    }
+  });
 
-    function updateUser() {
-        // fields to update
-        var set = {
-            firstName: userParam.firstName,
-            lastName: userParam.lastName,
-            username: userParam.username,
-            apiKey: userParam.apiKey
-        };
+  function updateUser() {
+    // fields to update
+    var set = {
+      firstName: userParam.firstName,
+      lastName: userParam.lastName,
+      username: userParam.username,
+      apiKey: userParam.apiKey
+    };
 
-        // update password if it was entered
-        if (userParam.password) {
-            set.hash = bcrypt.hashSync(userParam.password, 10);
-        }
-
-        db.users.update(
-            { _id: mongo.helper.toObjectID(_id) },
-            { $set: set },
-            function (err, doc) {
-                if (err) deferred.reject(err);
-
-                deferred.resolve();
-            });
+    // update password if it was entered
+    if (userParam.password) {
+      set.hash = bcrypt.hashSync(userParam.password, 10);
     }
 
-    return deferred.promise;
+    db.users.update(
+      { _id: mongo.helper.toObjectID(_id) },
+      { $set: set },
+      function (err, doc) {
+        if (err) deferred.reject(err);
+
+        deferred.resolve();
+      });
+  }
+
+  return deferred.promise;
 }
 
 function updateApiKey(_id, userParam) {
@@ -252,17 +252,17 @@ function updateApiKey(_id, userParam) {
 }
 
 function _delete(_id) {
-    var deferred = Q.defer();
+  var deferred = Q.defer();
 
-    db.users.remove(
-        { _id: mongo.helper.toObjectID(_id) },
-        function (err) {
-            if (err) deferred.reject(err);
+  db.users.remove(
+    { _id: mongo.helper.toObjectID(_id) },
+    function (err) {
+        if (err) deferred.reject(err);
 
-            deferred.resolve();
-        });
+        deferred.resolve();
+    });
 
-    return deferred.promise;
+  return deferred.promise;
 }
 
 //stats
@@ -276,10 +276,10 @@ function  fetchWaka(day, apiKey) {
     var parsedSummary = JSON.parse(summary)
     var grandTotal = parsedSummary.data[0].grand_total;
     var stat = {
-        day: day,
-        hours: grandTotal.hours,
-        minutes: grandTotal.minutes,
-        total_seconds: grandTotal.total_seconds
+      day: day,
+      hours: grandTotal.hours,
+      minutes: grandTotal.minutes,
+      total_seconds: grandTotal.total_seconds
     };
     //return stat
     deferred.resolve(stat);
@@ -303,7 +303,7 @@ function createStat(_id) {
       }
       db.users.update(
         {_id: mongo.helper.toObjectID(_id)},
-        {$set: user},
+        {$set: {"stats": user.stats}},
         function (err, doc) {
           if (err) deferred.reject(err);
 
@@ -360,7 +360,7 @@ function fetchMissingWeekStats(_id) {
       }
       db.users.update(
         {_id: mongo.helper.toObjectID(_id)},
-        {$set: user},
+        {$set: {"stats": user.stats}},
         function (err, doc) {
           if (err) deferred.reject(err);
 
